@@ -185,7 +185,7 @@ Jt4 = JT_J4(x,y,param)
 Q,R=nla.qr_multiply(Jt4,Jr4)
 erreur = nla.solve_triangular(R,Q)
 paramGaussNewton4 = np.add(param,erreur)
-print("Les paramètres kappa,alpha,rho,lambda =",paramGaussNewton4)
+print("Les paramètres de la question 4 kappa,alpha,rho,lambda =",paramGaussNewton4)
 Y_GaussNewton4=np.empty(len(y))
 for i in range(len(y)):
     Y_GaussNewton4[i] = np.array([s4(paramGaussNewton4,x[i])])
