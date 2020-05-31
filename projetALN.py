@@ -71,9 +71,46 @@ def Hes(x,y,p):
 
 H = Hes(x,y,param)
 J = m_J(x,y,param)
-#Résolution en utilisant la méthode QR
+#Résolution en utilisant la méthode QR, application de la méthode de Newton
 Q,R=nla.qr_multiply(H,-J)
 erreur = nla.solve_triangular(R,Q.T)
-param = np.add(param,erreur)
-#Résultat plus précis
-print(param)
+param_Newton = np.add(param,erreur)
+
+#Méthode de Gauss-Newton
+def m_JT_r(x,y,p):
+    b = 0
+    for i in range(len(x)):
+        t1 = math.exp(-p[2] * x[i] + p[1])
+        t2 = 1 + t1
+        t2 = 0.1e1 / t2
+        t3 = p[0] * t2 - y[i]
+        t1 = p[0] * t2 ** 2 * t1 * t3
+        b = b + np.array([-t2 * t3,t1,-t1 * x[i]])
+    return b
+Jr = m_JT_r(x,y,param)
+def JT_J(x,y,p):
+    A = 0
+    for i in range(len(x)):
+        t1 = math.exp(-p[2] * x[i] + p[1])
+        t2 = 1 + t1
+        t2 = 0.1e1 / t2
+        t3 = t2 ** 2
+        t2 = t2 * t3 * p[0]
+        t4 = t2 * t1
+        t2 = t2 * x[i] * t1
+        t1 = p[0] ** 2 * t3 ** 2 * t1 ** 2
+        t5 = t1 * x[i]
+        A = A + np.array([[t3,-t4,t2],[-t4,t1,-t5],[t2,-t5,t1 * x[i] **2]])
+    return A
+Jt = JT_J(x,y,param)
+
+Q,R=nla.qr_multiply(Jt,Jr)
+erreur = nla.solve_triangular(R,Q)
+paramGaussNewton = np.add(param,erreur)
+
+
+print("En utilisant la méthode des moindres carrés kappa,alpha,rho = ", param)
+print("En utilisant la méthode de Newton kappa,alpha,rho = ", param_Newton)
+
+print("En utilisant la méthode de Gauss-Newton kappa,alpha,rho = ", paramGaussNewton)
+
