@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def logit(p):
     return math.log(p/(1-p))
 def s(p,x):
-    return p[0]/(1 + exp(p[1]-p[2]*x))
+    return p[0]/(1 + math.exp(p[1]-p[2]*x))
 
 
 #Initialisation des données
@@ -26,7 +26,6 @@ def OLS(f,x,y,kappa):   #Fonction pour trouver alpha et rho sachant kappa = 30.5
     alpha_rho = nla.solve_triangular(R,Q.T.dot(b))
     return alpha_rho
 param = np.append(param,OLS(logit,x,y,param[0]))#Ajout des nouveaux paramètres trouvés
-
 def r(p):
     result = np.empty(m)
     for i in range(0,m):
@@ -111,6 +110,28 @@ paramGaussNewton = np.add(param,erreur)
 
 print("En utilisant la méthode des moindres carrés kappa,alpha,rho = ", param)
 print("En utilisant la méthode de Newton kappa,alpha,rho = ", param_Newton)
-
 print("En utilisant la méthode de Gauss-Newton kappa,alpha,rho = ", paramGaussNewton)
+
+Y=np.empty(len(x))
+Y_Newton = np.empty(len(x))
+Y_GaussNewton = np.empty(len(x))
+
+for i in range(len(x)):
+    Y[i] = np.array([s(param,x[i])])
+    Y_Newton[i] = np.array([s(param_Newton,x[i])])
+    Y_GaussNewton[i] = np.array([s(paramGaussNewton,x[i])])
+
+plt.plot(x,y,label = "Courbe 0")
+plt.plot(x,Y,label = "Courbe avec méthode des moindres carrés")
+plt.plot(x,Y_Newton,label = "Courbe avec méthode de Newton")
+plt.plot(x,Y_GaussNewton,label = "Courbe avec méthode de GaussNewton")
+plt.legend()
+plt.show()
+#Question 3 
+#Comparaison graphique des courbes
+plt.plot(x,Y_Newton,label = "Courbe avec méthode de Newton")
+plt.plot(x,Y_GaussNewton,label = "Courbe avec méthode de GaussNewton")
+plt.legend()
+plt.show()
+
 
